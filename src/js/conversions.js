@@ -1,6 +1,6 @@
 import '../sass/styles.sass'
 
-const conversionsURL = `${PROTOCOL}://${HOST}/v1/conversion/`
+const conversionsURL = `${PROTOCOL}://${HOST}/v1/register-conversion/`
 const CONTENT_ID = 'content'
 
 const clearContent = () => {

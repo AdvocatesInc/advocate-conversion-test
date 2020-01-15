@@ -1,6 +1,6 @@
 # Advocate Conversions Test App
 
-Mini-application for checking that the full conversion round-trip is functioning. All it does is take the ` advref` query paramter in the URL, if exists, and post the value back to the `/v1/conversions/` endpoint.
+Mini-application for checking that the full conversion round-trip is functioning. All it does is take the ` advref` query paramter in the URL, if exists, and post the value back to the `/v1/register-conversion/` endpoint.
 
 ## Development
 
