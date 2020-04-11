@@ -5,7 +5,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: {
-    browsersource: './src/js/index.js'
+    landing: './src/js/landing.js',
+    after: './src/js/after.js',
   },
   module: {
     rules: [
@@ -23,7 +24,15 @@ module.exports = {
       title: 'Conversion Tester | Advocate',
       template: 'src/html/index.html',
       favicon: './src/img/favicon.png',
-    })
+      chunks: ['landing'],
+    }),
+    new HtmlWebpackPlugin({
+      title: 'Conversion Tester | Advocate',
+      template: 'src/html/index.html',
+      filename: 'conversion/index.html',
+      favicon: './src/img/favicon.png',
+      chunks: ['after'],
+    }),
   ],
   output: {
     filename: '[name]-[hash].js',

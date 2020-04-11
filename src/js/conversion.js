@@ -1,27 +1,9 @@
-import '../sass/styles.sass'
+import { getCookie, setCookie } from './cookies'
+import { setContent, createLink } from './utils'
 
+export const ADVOCATE_COOKIE_NAME = 'advref'
 const conversionsURL = `${PROTOCOL}://${HOST}/v1/register-conversion/`
-const CONTENT_ID = 'content'
 
-const clearContent = () => {
-  /*
-   * Empties the main content wrapper
-   */
-  document.getElementById(CONTENT_ID).innerHTML = ''
-}
-
-export const setContent = (content) => {
-  /*
-   * Loads the message text `content` into the main content wrapper.  Used for
-   * any content, including success and error messages
-   */
-  clearContent()
-  const contentWrapper = document.getElementById('content')
-  const textWrapper = document.createElement('span')
-  textWrapper.textContent = content
-
-  contentWrapper.appendChild(textWrapper)
-}
 
 export const getSource = () => {
   /*
@@ -36,6 +18,26 @@ export const getSource = () => {
   return queryParams.get('advref')
 }
 
+
+export const startConversion = () => {
+  /*
+   * Store the advref value in a cookie, so we can access it
+   * after a conversion event
+   */
+  const source = getSource()
+
+  if (!source) {
+    setContent(`
+        No valid source detected. A valid conversion should
+        include a link source in the 'advref' query parameter.
+      `)
+  } else {
+    setCookie(ADVOCATE_COOKIE_NAME, source)
+    createLink('Get Converted!', '/conversion')
+  }
+}
+
+
 export const postJSON = (url, json) => fetch(url, {
   method: 'post',
   headers: {
@@ -45,13 +47,14 @@ export const postJSON = (url, json) => fetch(url, {
   body: JSON.stringify(json),
 })
 
+
 export const handleResponse = (response) => {
   switch (true) {
     case (response.status < 200):
       setContent('How did this even happen?')
       break
     case (response.status < 300):
-      setContent('Conversion completed successfully!')
+      setContent('I\'m Converted!')
       break
     case (response.status < 400):
       setContent(`
@@ -63,7 +66,7 @@ export const handleResponse = (response) => {
     case (response.status === 400):
       setContent(`
         There was an issue posting this conversion to the
-        Advocate API. This is likely, although exclusively,
+        Advocate API. This is likely, although not exclusively,
         due to the source not matching one on an active
         Tracking Link.
       `)
@@ -91,16 +94,18 @@ export const handleResponse = (response) => {
   }
 }
 
-export const runConversion = () => {
+
+export const finishConversion = () => {
   /*
-   * Main entry point for the app.
+   * Pull the conversion advref source from the stored cookie,
+   * echo it back to the conversion endpoint
    */
-  const source = getSource()
+  const source = getCookie(ADVOCATE_COOKIE_NAME)
 
   if (!source) {
     setContent(`
-        No valid source detected. A valid conversion should
-        include a link source in the 'advref' query paramter.
+        No matching cookie found. A valid conversion should
+        include a link source in the 'advref' cookie.
       `)
   } else {
     postJSON(conversionsURL, { source }).then(
